@@ -1,0 +1,33 @@
+version: "3"
+services:
+  db:
+    image: postgres:15.1
+    ports: 
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+  app:
+    build: ./backend
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/go/src/app
+    tty:
+      true
+    ports:
+      - 8080:80
+  react:
+    build: ./front/taiyaki-blog
+    tty: true
+    depends_on:
+      - app
+    volumes:
+        - ./front/taiyaki-blog:/usr/src/app
+    ports:
+        - 5173:5173
+volumes:
+  node_modules:
