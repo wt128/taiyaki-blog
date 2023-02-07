@@ -10,5 +10,9 @@
     "preview": "vite preview"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@material-ui/icons": "^4.11.3",
+    "prettier": "2.8.3"
+  }
 }
