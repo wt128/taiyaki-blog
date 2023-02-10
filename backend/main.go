@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wt128/taiyaki-blog/infrastructure"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -15,6 +16,7 @@ import (
 
 func main() {
 	r := gin.Default()
+	db := infrastructure.DbConn()
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
@@ -24,7 +26,7 @@ func main() {
 	ctx := context.Background()
 
 	// Open a PostgreSQL database.
-	dsn := "postgres://postgres:@localhost:5432/test?sslmode=disable"
+/*	dsn := "postgres://postgres:@localhost:5432/test?sslmode=disable"
 	pgdb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 
 	// Create a Bun db on top of it.
@@ -40,5 +42,5 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(rnd)
+	fmt.Println(rnd) */
 }

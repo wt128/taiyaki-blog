@@ -11,10 +11,13 @@ import Typography from '@material-ui/core/Typography';
 import { Article } from './ArticleList';
 const useStyles = makeStyles({
   root: {
-    maxWidth: 345,
+    minWidth: 345,
+    //width: "calc(100% / 3  - 40px)",
+    flex: 1,
+    boxSizing:"border-box",
   },
   media: {
-    height: 140,
+    height: 190,
   },
 });
 
@@ -22,7 +25,6 @@ export const ArticleCard = ({title, content, id}: Article) => {
   const classes = useStyles();
 
   return (
-    <Box sx={{display: 'flex', flex: 1}}>
     <Card className={classes.root}>
       <CardActionArea onClick={() => alert('aaaaa')}>
         <CardMedia
@@ -40,6 +42,6 @@ export const ArticleCard = ({title, content, id}: Article) => {
         </CardContent>
       </CardActionArea>
     </Card>
-    </Box>
+
   );
 }
