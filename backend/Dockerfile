@@ -10,4 +10,4 @@ RUN go mod init
 COPY ./go.mod ${ROOT}
 
 RUN go mod tidy
-EXPOSE 80
+EXPOSE 8080
