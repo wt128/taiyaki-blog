@@ -1,4 +1,0 @@
-!./front/taiyaki-blog/node_modules/.keep # node_modulesを左記に変更
-data/
-init/
-backend/.env
