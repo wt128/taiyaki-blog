@@ -15,7 +15,7 @@ func ErrorNotice(errMessage error) (err error){
 	if err != nil {
 			panic(err)
 	}
-	webhookURL := "https://hooks.slack.com/services/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"
+	webhookURL := env('SLACK_WEBHOOK')
 	resp, err := http.PostForm(webhookURL, url.Values{"payload": {string(p)}})
 	if err != nil {
 			return err
