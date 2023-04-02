@@ -2,3 +2,4 @@
 data/
 init/
 backend/.env
+front/taiyaki-blog/.env*

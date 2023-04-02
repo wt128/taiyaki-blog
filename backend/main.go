@@ -1,61 +1,60 @@
 package main
 
 import (
-	"context"
+	"database/sql"
 	_ "encoding/json"
-	"net/http"
+	_ "net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wt128/taiyaki-blog/domain/model"
-	"github.com/wt128/taiyaki-blog/infrastructure"
+	"github.com/joho/godotenv"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/driver/pgdriver"
 	"github.com/wt128/taiyaki-blog/util"
 )
 
-type hoge2 struct {
-	Id       int64  `bun:"id"`
-	Name     string `bun:"name"`
-	Age      int    `bun:"age"`
-	Password string `bun:"password"`
+type AuthUser struct {
+	ID           uint `bun:",pk,autoincrement"`
+	Name         string
+	Email        string
+	Password     string
+	CreatedAt    string `bun:created_at`
+	UpdatedAt    string `bun:updated_at`
+	Introduction string
+}
+
+type Article struct {
+	ID	uint
+	Content	string
+	Title	string
+	Explain string
+	UserId uint	
+	CreatedAt string
+	UpdatedAt string
+
 }
 
 func main() {
 	r := gin.Default()
 	// db := infrastructure.DbConn()
-	r.GET("/ping", func(c *gin.Context) {
-		db := infrastructure.DbConn()
-		article := []model.Article{}
-		err := db.NewSelect().Model(&article).Scan(context.Background())
-		_, err1 := db.NewCreateTable().Model((*hoge2)(nil)).Exec(context.Background())
-		if err1 != nil {
-			util.ErrorNotice(err1)
-		}
+	dsn := "postgres://postgres:@localhost:5432/postgres?sslmode=disable"
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn), pgdriver.WithPassword("postgres")))
+	db := bun.NewDB(sqldb, pgdialect.New())
+
+	r.GET("/article", func(ctx *gin.Context) {
+		var articles []Article
+		err := db.NewSelect().Model((*Article)(nil)).Scan(ctx, &articles)
 		if err != nil {
-			util.ErrorNotice(err1)
+			util.ErrorNotice(err)
 		}
-		//articleDTO, err := json.Marshal(article)
-		if err != nil {
-			c.AbortWithStatus(http.StatusUnprocessableEntity)
-		}
-		c.JSON(200, db.String())
+		ctx.JSON(200, articles)
 	})
-	r.Run(":8080")
+	r.POST("/article", func (ctx *gin.Context) {
+		//newArticle := 
+	})
 
-	// Open a PostgreSQL database.
-	/*	dsn := "postgres://postgres:@localhost:5432/test?sslmode=disable"
-		pgdb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
-
-		// Create a Bun db on top of it.
-		db := bun.NewDB(pgdb, pgdialect.New())
-
-		// Print all queries to stdout.
-		db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
-
-		var rnd float64
-
-		// Select a random number.
-		if err := db.NewSelect().ColumnExpr("random()").Scan(ctx, &rnd); err != nil {
-			panic(err)
-		}
-
-		fmt.Println(rnd) */
+	godotenv.Load()
+	port := os.Getenv("PORT")
+	r.Run(":" + port)
 }
