@@ -7,6 +7,7 @@ import { Header } from './Components/Header';
 import { AuthContextProvider } from './Contexts/AuthContextProvider';
 import './index.css';
 import { ArticleRead } from './Pages/ArticleRead';
+import { ArticleEdit } from './Pages/ArticleEdit';
 
 const router = createBrowserRouter([
   {
@@ -17,13 +18,20 @@ const router = createBrowserRouter([
     path: 'article/:id',
     element: <ArticleRead />,
   },
+  {
+    path: 'article/edit',
+    element: <ArticleEdit />
+  }
 ]);
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <AuthContextProvider>
       <Auth0Provider
-        domain={import.meta.env.AUTH0_DOMAIN}
-        clientId={import.meta.env.AUTH0_CLIENT_ID}
+        domain={import.meta.env.VITE_AUTH0_DOMAIN}
+        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+        authorizationParams={{
+          redirect_uri: window.location.origin
+        }}
       >
         <Header />
         <RouterProvider router={router} />

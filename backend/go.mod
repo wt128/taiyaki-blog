@@ -2,7 +2,10 @@ module github.com/wt128/taiyaki-blog
 
 go 1.18
 
+replace github.com/wt128/taiyaki-blog/util => ./util
+
 require (
+	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.2
 	github.com/joho/godotenv v1.5.1
 	github.com/uptrace/bun v1.1.12

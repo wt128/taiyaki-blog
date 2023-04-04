@@ -9,5 +9,4 @@ COPY ./main.go ${ROOT}
 RUN go mod init
 COPY ./go.mod ${ROOT}
 
-RUN go mod tidy
 EXPOSE 8080

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useNavigate } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -23,10 +23,11 @@ const useStyles = makeStyles({
 
 export const ArticleCard = ({title, content, id}: Article) => {
   const classes = useStyles();
+  const navigation = useNavigate();
 
   return (
     <Card className={classes.root}>
-      <CardActionArea onClick={() => alert('aaaaa')}>
+      <CardActionArea onClick={() => navigation(`/article/${id}`)}>
         <CardMedia
           className={classes.media}
           image="assets/react.svg"
