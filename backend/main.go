@@ -7,6 +7,7 @@ import (
 	_ "log"
 	_ "net/http"
 	"os"
+	"strconv"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -75,6 +76,19 @@ func main() {
 	});
 	r.POST("/article", func(ctx *gin.Context) {
 		//newArticle :=
+		title, _ := ctx.GetPostForm("title")
+		content, _ := ctx.GetPostForm("content")
+		userId, _ := ctx.GetPostForm("userId")
+		intUserId, _ := strconv.Atoi(userId)
+		newArticle := &Article{
+			Title: title,
+			UserId: uint(intUserId),
+			Content: content,
+		}
+		if _, err := db.NewInsert().Model(newArticle).Exec(ctx); err != nil {
+			util.ErrorNotice(err)
+		}
+		ctx.JSON(200, "success")
 	})
 
 	godotenv.Load()
