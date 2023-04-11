@@ -31,7 +31,6 @@ func FetchJWKS(auth0Domain string) (*JWKS, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-
 	// 取得したJSONデータを構造体にマッピングする
 	jwks := &JWKS{}
 	err = json.NewDecoder(resp.Body).Decode(jwks)

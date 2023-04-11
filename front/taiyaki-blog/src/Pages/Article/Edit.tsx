@@ -51,6 +51,7 @@ export const Edit: FC = () => {
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const token = useAuth0Token();
+  document.title = "編集ページ"
   const [notifyState, setNotifyState] = useState({
     open: false,
     isSuccess: false,

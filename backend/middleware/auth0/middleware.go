@@ -21,9 +21,11 @@ func WithJWTMiddleware(m *jwtmiddleware.JWTMiddleware) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 			// リクエストのContextにJWTMiddlewareを格納する
 			context.WithValue(ctx.Request.Context(), JWTMiddlewareKey{}, m)
+			
 			//ctx.Request.Context().WithContext()
 			// 新しいContextを入れて次の処理に渡す
 			//next.ServeHTTP(w, r.WithContext(ctx))
+			fmt.Println(m)
 			ctx.Next()
 	}
 }
@@ -32,6 +34,7 @@ func WithJWTMiddleware(m *jwtmiddleware.JWTMiddleware) gin.HandlerFunc {
 func UseJWT() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// ContextからJWTMiddlewareを取得
+		
 		jwtm := ctx.Request.Context().Value(JWTMiddlewareKey{}).(*jwtmiddleware.JWTMiddleware)
 		// リクエスト中のJWTを検証
 		if err := jwtm.CheckJWT(ctx.Writer, ctx.Request); err != nil {

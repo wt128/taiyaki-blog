@@ -22,6 +22,5 @@ func Config() gin.HandlerFunc {
 		AllowHeaders: []string{
 			"Authorization",
 		},
-	
 	})
 }
