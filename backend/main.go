@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	_ "encoding/json"
 	"fmt"
 	_ "log"
@@ -9,12 +8,13 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/gin-contrib/cors"
+	"github.com/form3tech-oss/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/driver/pgdriver"
+	"github.com/wt128/taiyaki-blog/infrastructure/db"
+	"github.com/wt128/taiyaki-blog/middleware/auth0"
+	auth0Middleware "github.com/wt128/taiyaki-blog/middleware/auth0"
+	corsMiddleware "github.com/wt128/taiyaki-blog/middleware/cors"
 	"github.com/wt128/taiyaki-blog/util"
 )
 
@@ -30,68 +30,68 @@ type AuthUser struct {
 
 type Article struct {
 	ID        uint   `json:"id" bun:id",pk,autoincrement"`
-	Content   string `json:"content"`
-	Title     string `json:"title"`
-	Explain   string `json:"explain"`
-	UserId    uint   `json:"userId"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	Content   string `json:"content" "bun:content"`
+	Title     string `json:"title" bun:"title"`
+	Explain   string `json:"explain" bun:"explain"`
+	UserId    uint   `json:"userId" bun:"user_id"`
+	CreatedAt string `json:"createdAt" bun:"created_at"`
+	UpdatedAt string `json:"updatedAt" bun:"updated_at"`
 }
 
 func main() {
 	r := gin.Default()
 	// db := infrastructure.DbConn()
-	r.Use(cors.New(cors.Config{
-		// アクセスを許可したいアクセス元
-		AllowOrigins: []string{
-			"*",
-		},
-		// アクセスを許可したいHTTPメソッド(以下の例だとPUTやDELETEはアクセスできません)
-		AllowMethods: []string{
-			"POST",
-			"GET",
-			"OPTIONS",
-			"DELETE",
-			"PUT",
-		}}))
-	dsn := "postgres://postgres:@db:5432/postgres?sslmode=disable"
-	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn), pgdriver.WithPassword("postgres")))
-	db := bun.NewDB(sqldb, pgdialect.New())
-
+	r.Use(corsMiddleware.Config())
+	r.Use(auth0Middleware.Config())
+	var db db.DB
+	sqlInstance := db.DbConn()
 	r.GET("/article", func(ctx *gin.Context) {
 		var article []Article
-		if err := db.Ping(); err != nil {
-			util.ErrorNotice(err)
-		}
-		err := db.NewSelect().Model((*Article)(nil)).Scan(ctx, &article)
-		fmt.Println(article)
+		err := sqlInstance.NewSelect().Model((*Article)(nil)).Scan(ctx, &article)
 		if err != nil {
 			util.ErrorNotice(err)
 		}
 		ctx.JSON(200, article)
-		//log.Fatal(articles)
 	})
 	r.GET("/article/:id", func(ctx *gin.Context) {
-
-	});
-	r.POST("/article", func(ctx *gin.Context) {
-		//newArticle :=
-		title, _ := ctx.GetPostForm("title")
-		content, _ := ctx.GetPostForm("content")
-		userId, _ := ctx.GetPostForm("userId")
-		intUserId, _ := strconv.Atoi(userId)
-		newArticle := &Article{
-			Title: title,
-			UserId: uint(intUserId),
-			Content: content,
-		}
-		if _, err := db.NewInsert().Model(newArticle).Exec(ctx); err != nil {
+		var article Article
+		id := ctx.Param("id")
+		err := sqlInstance.NewSelect().Model((*Article)(nil)).Where("id = ?", id).Scan(ctx, &article)
+		if err != nil {
 			util.ErrorNotice(err)
 		}
-		ctx.JSON(200, "success")
+		ctx.JSON(200, article)
 	})
+
+	r.POST("/article", auth0.UseJWT(), handlePost)
 
 	godotenv.Load()
 	port := os.Getenv("PORT")
 	r.Run(":" + port)
+}
+
+func handlePost(ctx *gin.Context) {
+	var db db.DB
+	sqlInstance := db.DbConn()
+	token := auth0.GetJWT(ctx.Request.Context())
+	fmt.Printf("jwt %+v\n", token)
+	// token.Claimsをjwt.MapClaimsへ変換
+	claims := token.Claims.(jwt.MapClaims)
+	// claimsの中にペイロードの情報が入っている
+	sub := claims["sub"].(string)
+	fmt.Printf("sub %+v\n", sub)
+	title, _ := ctx.GetPostForm("title")
+	content, _ := ctx.GetPostForm("content")
+	userId, _ := ctx.GetPostForm("userId")
+	intUserId, _ := strconv.Atoi(userId)
+	newArticle := map[string]interface{}{
+		"title":   title,
+		"user_id": uint(intUserId),
+		"content": content,
+	}
+
+	if _, err := sqlInstance.NewInsert().Model(&newArticle).Table("articles").Exec(ctx); err != nil {
+		util.ErrorNotice(err)
+	}
+	ctx.JSON(200, "success")
 }

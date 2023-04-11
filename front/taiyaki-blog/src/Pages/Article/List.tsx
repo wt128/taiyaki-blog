@@ -6,7 +6,7 @@ import {
   Snackbar,
   CircularProgress,
 } from '@material-ui/core';
-import { ArticleCard } from './ArticleCard';
+import { ArticleCard } from './Card';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -16,7 +16,6 @@ export interface Article {
   content: string;
   explain: string;
   userId: number;
-  
 }
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,8 +28,8 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'space-between',
     },
     loading: {
-      margin: '0 auto'
-    }
+      margin: '0 auto',
+    },
   })
 );
 
@@ -42,40 +41,18 @@ const useFetchArticleList = () => {
     axios
       .get<Article[]>(`${import.meta.env.VITE_BACKEND}/article`)
       .then((res) => {
-        setData(res.data)
-        console.log(data)
+        setData(res.data);
+        console.log(data);
       })
       .catch(() => console.log(`error`))
       .finally(() => setIsFetching(false));
   }, []);
   return { lists: data, isFetching };
 };
-export const ArticleList = () => {
+export const List = () => {
   const classes = useStyles();
   const { lists, isFetching } = useFetchArticleList();
-  console.log(isFetching)
-  // const lists: Article[] = [
-  //   {
-  //     id: 1,
-  //     title: "aaaaaa",
-  //     content: "aaaaaaaa"
-  //   },
-  //   {
-  //     id: 1,
-  //     title: "aaaaaa",
-  //     content: "aaaaaaaa"
-  //   },
-  //   {
-  //     id: 1,
-  //     title: "aaaaaa",
-  //     content: "aaaaaaaa"
-  //   },
-  //   {
-  //     id: 1,
-  //     title: "aaaaaa",
-  //     content: "aaaaaaaa"
-  //   },
-  // ]
+
   const listItems = lists ? (
     lists.map((item) => (
       <ArticleCard title={item.title} content={item.content} id={item.id} />
@@ -86,7 +63,7 @@ export const ArticleList = () => {
 
   return (
     <div className={classes.root}>
-      { isFetching  ? (
+      {isFetching ? (
         <div className={classes.loading}>
           <CircularProgress />
         </div>

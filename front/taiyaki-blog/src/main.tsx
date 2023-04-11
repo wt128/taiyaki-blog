@@ -4,10 +4,9 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import { Header } from './Components/Header';
-import { AuthContextProvider } from './Contexts/AuthContextProvider';
 import './index.css';
-import { ArticleRead } from './Pages/ArticleRead';
-import { ArticleEdit } from './Pages/ArticleEdit';
+import { Read as ArticleRead } from './Pages/Article/Read';
+import { Edit as ArticleEdit } from './Pages/Article/Edit';
 
 const router = createBrowserRouter([
   {
@@ -20,22 +19,22 @@ const router = createBrowserRouter([
   },
   {
     path: 'article/edit',
-    element: <ArticleEdit />
-  }
+    element: 
+    
+      <ArticleEdit />,
+  },
 ]);
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <AuthContextProvider>
       <Auth0Provider
         domain={import.meta.env.VITE_AUTH0_DOMAIN}
         clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
         authorizationParams={{
-          redirect_uri: window.location.origin
+          redirect_uri: window.location.origin,
         }}
       >
         <Header />
         <RouterProvider router={router} />
       </Auth0Provider>
-    </AuthContextProvider>
   </React.StrictMode>
 );

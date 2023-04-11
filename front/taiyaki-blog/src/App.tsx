@@ -1,5 +1,5 @@
 import './App.css';
-import { ArticleList } from './Pages/ArticleList';
+import { List as ArticleList } from './Pages/Article/List';
 
 function App() {
   return (

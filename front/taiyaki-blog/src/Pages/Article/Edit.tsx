@@ -5,16 +5,17 @@ import {
   createStyles,
   makeStyles,
 } from '@material-ui/core';
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import { articleService } from '../Features/api/Article';
+import { articleService } from '../../Features/api/article';
 import { Alert, LoadingButton } from '@mui/lab';
+import { useAuth0Token } from '../../Utils/auth';
 
 const useStyles = makeStyles(() =>
   createStyles({
     head: {
-      margin: "15px 40px",
-      float: "right"
+      margin: '15px 40px',
+      float: 'right',
     },
     root: {
       display: 'flex',
@@ -43,11 +44,13 @@ const useStyles = makeStyles(() =>
     },
   })
 );
-export const ArticleEdit: FC = () => {
-  const [content, setContent] = useState('');
-  const [title, setTitle] = useState('');
+
+export const Edit: FC = () => {
+  const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
+  const token = useAuth0Token();
   const [notifyState, setNotifyState] = useState({
     open: false,
     isSuccess: false,
@@ -56,18 +59,17 @@ export const ArticleEdit: FC = () => {
     setLoading(true);
     postArticle();
   };
-
   const postArticle = () => {
-   articleService
-    .new(1, title, content)
-    .then(() => {
-      setNotifyState({ open: true, isSuccess: true });
-    })
-    .catch(() => {
-      setNotifyState({ open: true, isSuccess: false });
-    })
-    .finally(() => setLoading(false));
-  }
+    articleService
+      .new(1, title, content, token)
+      .then(() => {
+        setNotifyState({ open: true, isSuccess: true });
+      })
+      .catch(() => {
+        setNotifyState({ open: true, isSuccess: false });
+      })
+      .finally(() => setLoading(false));
+  };
 
   const handleClose = () => {
     setNotifyState({ open: false, isSuccess: notifyState.isSuccess });
@@ -101,7 +103,12 @@ export const ArticleEdit: FC = () => {
   return (
     <>
       <div className={classes.head}>
-        <LoadingButton onClick={handlePost} loading={loading} variant="contained" size='large'>
+        <LoadingButton
+          onClick={handlePost}
+          loading={loading}
+          variant="contained"
+          size="large"
+        >
           投稿
         </LoadingButton>
       </div>
