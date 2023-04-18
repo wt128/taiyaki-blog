@@ -63,14 +63,13 @@ func main() {
 		ctx.JSON(200, article)
 	})
 
-	r.POST("/article", auth0.UseJWT(), handlePost)
-
+	r.POST("/article", gin.WrapH(auth0.EnsureValidToken()), HandlePost)
 	godotenv.Load()
 	port := os.Getenv("PORT")
 	r.Run(":" + port)
 }
 
-func handlePost(ctx *gin.Context) {
+func HandlePost(ctx *gin.Context) {
 	var db db.DB
 	sqlInstance := db.DbConn()
 	token := auth0.GetJWT(ctx.Request.Context())

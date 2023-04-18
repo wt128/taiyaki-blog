@@ -1,7 +1,6 @@
 package auth0
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -23,6 +22,5 @@ func Config() gin.HandlerFunc {
 	if err != nil {
 		util.ErrorNotice(err)
 	}
-	fmt.Println(jwtMiddleware)
 	return WithJWTMiddleware(jwtMiddleware)
 }

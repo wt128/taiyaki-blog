@@ -3,7 +3,6 @@ package auth0
 import (
 	"errors"
 	"fmt"
-	"net/http"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/form3tech-oss/jwt-go"
@@ -13,9 +12,15 @@ func NewMiddleware(domain, clientID string, jwks *JWKS) (*jwtmiddleware.JWTMiddl
 	return jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: newValidationKeyGetter(domain, clientID, jwks),
 		SigningMethod:       jwt.SigningMethodRS256,
-		ErrorHandler:        func(w http.ResponseWriter, r *http.Request, err string) {},
 	}), nil
 }
+
+// var JWTMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
+// 	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+// 		return []byte(os.Getenv("AUTH0_CLIENT_SECRET")), nil
+// 	},
+// 	SigningMethod: jwt.SigningMethodHS256,
+// })
 
 func newValidationKeyGetter(domain, clientID string, jwks *JWKS) func(*jwt.Token) (interface{}, error) {
 	return func(token *jwt.Token) (interface{}, error) {
