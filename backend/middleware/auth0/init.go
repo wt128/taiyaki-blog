@@ -1,13 +1,13 @@
 package auth0
 
 import (
-	"os"
+	_"os"
 
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
-	"github.com/wt128/taiyaki-blog/util"
+	_"github.com/gin-gonic/gin"
+	_"github.com/joho/godotenv"
+	_"github.com/wt128/taiyaki-blog/util"
 )
-
+/*
 func Config() gin.HandlerFunc {
 	godotenv.Load()
 	domain := os.Getenv("AUTH0_DOMAIN")
@@ -24,3 +24,4 @@ func Config() gin.HandlerFunc {
 	}
 	return WithJWTMiddleware(jwtMiddleware)
 }
+*/

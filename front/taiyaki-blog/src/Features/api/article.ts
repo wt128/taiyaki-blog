@@ -17,7 +17,7 @@ export const articleService = {
     params.append("content", content)
     await axios.post(`${import.meta.env.VITE_BACKEND}/article`, params, {
        headers: {
-        "Authorization": `Bearer ${token}`,
+        "authorization": `Bearer ${token}`,
        }
       })
   },

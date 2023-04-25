@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type payload struct {
@@ -19,7 +17,6 @@ func ErrorNotice(errMessage error) (err error) {
 		panic(err)
 	}
 	// envファイルのパスを渡す。何も渡さないと、どうディレクトリにある、.envファイルを探す
-	godotenv.Load()
 	webhookURL := os.Getenv("SLACK_WEBHOOK")
 	if err != nil {
 		panic("Error loading .env file")
@@ -29,5 +26,6 @@ func ErrorNotice(errMessage error) (err error) {
 		return err
 	}
 	defer resp.Body.Close()
+
 	return nil
 }

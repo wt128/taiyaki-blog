@@ -5,7 +5,7 @@ import {
   createStyles,
   makeStyles,
 } from '@material-ui/core';
-import { FC, useState } from 'react';
+import { ChangeEventHandler, FC, useEffect, useState } from 'react';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { articleService } from '../../Features/api/article';
 import { Alert, LoadingButton } from '@mui/lab';
@@ -46,21 +46,18 @@ const useStyles = makeStyles(() =>
 );
 
 export const Edit: FC = () => {
-  const [content, setContent] = useState("");
-  const [title, setTitle] = useState("");
-  const classes = useStyles();
-  const [loading, setLoading] = useState(false);
-  const token = useAuth0Token();
-  document.title = "編集ページ"
+  const [content, setContent] = useState('');
+  const [title, setTitle] = useState('');
   
+  const classes = useStyles();
+  const token = useAuth0Token();
+  const [loading, setLoading] = useState(false);
+  console.log(token);
+  document.title = '編集ページ';
   const [notifyState, setNotifyState] = useState({
     open: false,
     isSuccess: false,
   });
-  const handlePost = () => {
-    setLoading(true);
-    postArticle();
-  };
   const postArticle = () => {
     articleService
       .new(1, title, content, token)
@@ -72,9 +69,18 @@ export const Edit: FC = () => {
       })
       .finally(() => setLoading(false));
   };
+  const handlePost = () => {
+    setLoading(true);
+    postArticle();
+  };
 
   const handleClose = () => {
     setNotifyState({ open: false, isSuccess: notifyState.isSuccess });
+  };
+  const handleTitleChange: ChangeEventHandler<HTMLTextAreaElement> = ({
+    target,
+  }) => {
+    setTitle(target.value);
   };
   const notifyPosted = () => {
     return (
@@ -122,7 +128,7 @@ export const Edit: FC = () => {
             id="outlined-basic"
             label="タイトル"
             variant="outlined"
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={handleTitleChange}
           />
           <textarea
             className={classes.textArea}

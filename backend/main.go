@@ -2,18 +2,15 @@ package main
 
 import (
 	_ "encoding/json"
-	"fmt"
 	_ "log"
 	_ "net/http"
 	"os"
 	"strconv"
 
-	"github.com/form3tech-oss/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/wt128/taiyaki-blog/infrastructure/db"
 	"github.com/wt128/taiyaki-blog/middleware/auth0"
-	auth0Middleware "github.com/wt128/taiyaki-blog/middleware/auth0"
 	corsMiddleware "github.com/wt128/taiyaki-blog/middleware/cors"
 	"github.com/wt128/taiyaki-blog/util"
 )
@@ -42,7 +39,7 @@ func main() {
 	r := gin.Default()
 	// db := infrastructure.DbConn()
 	r.Use(corsMiddleware.Config())
-	r.Use(auth0Middleware.Config())
+	//r.Use(auth0Middleware.Config())
 	var db db.DB
 	sqlInstance := db.DbConn()
 	r.GET("/article", func(ctx *gin.Context) {
@@ -63,7 +60,7 @@ func main() {
 		ctx.JSON(200, article)
 	})
 
-	r.POST("/article", gin.WrapH(auth0.EnsureValidToken()), HandlePost)
+	r.POST("/article", auth0.AuthMiddleware(), HandlePost)
 	godotenv.Load()
 	port := os.Getenv("PORT")
 	r.Run(":" + port)
@@ -72,13 +69,10 @@ func main() {
 func HandlePost(ctx *gin.Context) {
 	var db db.DB
 	sqlInstance := db.DbConn()
-	token := auth0.GetJWT(ctx.Request.Context())
-	fmt.Printf("jwt %+v\n", token)
+	//token := auth0.GetJWT(ctx.Request.Context())
 	// token.Claimsをjwt.MapClaimsへ変換
-	claims := token.Claims.(jwt.MapClaims)
+	//claims := token.Claims.(jwt.MapClaims)
 	// claimsの中にペイロードの情報が入っている
-	sub := claims["sub"].(string)
-	fmt.Printf("sub %+v\n", sub)
 	title, _ := ctx.GetPostForm("title")
 	content, _ := ctx.GetPostForm("content")
 	userId, _ := ctx.GetPostForm("userId")
