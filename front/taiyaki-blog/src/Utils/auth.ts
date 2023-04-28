@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export const useAuth0Token = () => {
   const [accessToken, setAccessToken] = useState("");
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
   const fetchToken = async () => {
     // JWTを取得して状態に保存する
     const accessToken = await getAccessTokenSilently()
@@ -13,7 +13,7 @@ export const useAuth0Token = () => {
     if (isAuthenticated || !accessToken) {
       fetchToken();
     }
-  }, [accessToken])
+  }, [isAuthenticated, user?.sub])
   // ログイン済みの場合のみJWTを取得する
   return accessToken;
 };
