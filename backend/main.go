@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/uptrace/bun"
 	"github.com/wt128/taiyaki-blog/infrastructure/db"
 	"github.com/wt128/taiyaki-blog/middleware/auth0"
 	corsMiddleware "github.com/wt128/taiyaki-blog/middleware/cors"
@@ -25,37 +26,51 @@ type AuthUser struct {
 	Introduction string
 }
 
-type Article struct {
-	ID        uint   `json:"id" bun:id",pk,autoincrement"`
-	Content   string `json:"content" "bun:content"`
-	Title     string `json:"title" bun:"title"`
-	Explain   string `json:"explain" bun:"explain"`
-	UserId    uint   `json:"userId" bun:"user_id"`
-	CreatedAt string `json:"createdAt" bun:"created_at"`
-	UpdatedAt string `json:"updatedAt" bun:"updated_at"`
+type ArticleDTO struct {
+	bun.BaseModel `bun:"table:articles,alias:ac"`
+	ID            uint   `json:"id" bun:"id,pk,autoincrement"`
+	Content       string `json:"content" bun:"content"`
+	Title         string `json:"title" bun:"title"`
+	CreatedAt     string `json:"createdAt" bun:"created_at"`
+	Author        string `json:"author" bun:"author"`
 }
 
 func main() {
 	r := gin.Default()
 	// db := infrastructure.DbConn()
 	r.Use(corsMiddleware.Config())
+
 	//r.Use(auth0Middleware.Config())
 	var db db.DB
 	sqlInstance := db.DbConn()
+
 	r.GET("/article", func(ctx *gin.Context) {
-		var article []Article
-		err := sqlInstance.NewSelect().Model((*Article)(nil)).Scan(ctx, &article)
+		var article []ArticleDTO
+		err := sqlInstance.NewSelect().
+			Model((*ArticleDTO)(nil)).
+			ColumnExpr("ac.id ,title, content, u.name as author").
+			Join("left join auth_users as u").
+			JoinOn("u.id = ac.user_id").
+			Scan(ctx, &article)
 		if err != nil {
 			util.ErrorNotice(err)
+			ctx.Abort()
 		}
 		ctx.JSON(200, article)
 	})
 	r.GET("/article/:id", func(ctx *gin.Context) {
-		var article Article
+		var article ArticleDTO
 		id := ctx.Param("id")
-		err := sqlInstance.NewSelect().Model((*Article)(nil)).Where("id = ?", id).Scan(ctx, &article)
+		err := sqlInstance.NewSelect().
+			Model((*ArticleDTO)(nil)).
+			ColumnExpr("ac.id ,title, content, u.name as author, ac.created_at, user_id").
+			Join("left join auth_users as u").
+			JoinOn("u.id = ac.user_id").
+			Where("ac.id = ?", id).
+			Scan(ctx, &article)
 		if err != nil {
 			util.ErrorNotice(err)
+			ctx.Abort()
 		}
 		ctx.JSON(200, article)
 	})
@@ -69,10 +84,6 @@ func main() {
 func HandlePost(ctx *gin.Context) {
 	var db db.DB
 	sqlInstance := db.DbConn()
-	//token := auth0.GetJWT(ctx.Request.Context())
-	// token.Claimsをjwt.MapClaimsへ変換
-	//claims := token.Claims.(jwt.MapClaims)
-	// claimsの中にペイロードの情報が入っている
 	title, _ := ctx.GetPostForm("title")
 	content, _ := ctx.GetPostForm("content")
 	userId, _ := ctx.GetPostForm("userId")
@@ -82,7 +93,6 @@ func HandlePost(ctx *gin.Context) {
 		"user_id": uint(intUserId),
 		"content": content,
 	}
-
 	if _, err := sqlInstance.NewInsert().Model(&newArticle).Table("articles").Exec(ctx); err != nil {
 		util.ErrorNotice(err)
 	}

@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useNavigate } from 'react-router-dom';
+import { Box } from '@mui/material';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -66,10 +66,16 @@ export const Header = () => {
         >
           <MenuIcon />
         </IconButton> */}
-        <Typography variant="h6" className={classes.title}>
+        <Typography
+          variant="h6"
+          className={classes.title}
+          onClick={() => window.history.pushState({}, '', '/')}
+        >
           Taiyaki
         </Typography>
-        <>{isShowAuth()}</>
+        <Box sx={{ display: 'flex', gap: '6px' }}>
+          <>{isShowAuth()}</>
+        </Box>
       </Toolbar>
     </AppBar>
   );

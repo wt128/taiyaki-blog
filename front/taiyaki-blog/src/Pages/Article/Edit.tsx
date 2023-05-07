@@ -10,6 +10,8 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { articleService } from '../../Features/api/article';
 import { Alert, LoadingButton } from '@mui/lab';
 import { useAuth0Token } from '../../Utils/auth';
+import rehypeHighlight from 'https://esm.sh/rehype-highlight@5';
+import remarkGfm from 'remark-gfm';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -42,6 +44,9 @@ const useStyles = makeStyles(() =>
       width: '50%',
       fontSize: '24px',
     },
+    md: {
+      lineHeight: '6px'
+    }
   })
 );
 
@@ -140,7 +145,10 @@ export const Edit: FC = () => {
             <Typography variant="h2">{title}</Typography>
           </div>
           <div>
-            <ReactMarkdown>{content}</ReactMarkdown>
+            <ReactMarkdown
+              rehypePlugins={[rehypeHighlight]}
+              remarkPlugins={[remarkGfm]}
+            >{content}</ReactMarkdown>
           </div>
         </div>
       </div>

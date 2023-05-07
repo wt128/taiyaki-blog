@@ -1,10 +1,11 @@
-import { Auth0Provider } from '@auth0/auth0-react';
+import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import './App.css';
 import { Read as ArticleRead } from './Pages/Article/Read';
 import { Edit as ArticleEdit } from './Pages/Article/Edit';
 import { List as ArticleList } from './Pages/Article/List';
 import { Header } from './Components/Header';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   },
 ]);
 function App() {
+  const {user} = useAuth0()
+  useEffect(() => {
+    
+  }, [])
   return (
     <>
       <div className="App">
