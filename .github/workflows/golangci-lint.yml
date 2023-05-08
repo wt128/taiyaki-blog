@@ -10,7 +10,7 @@ on:
 permissions:
   contents: read
   # Optional: allow read access to pull request. Use with `only-new-issues` option.
-  # pull-requests: read
+  pull-requests: read
 jobs:
   golangci:
     name: lint
@@ -28,7 +28,7 @@ jobs:
           version: latest
 
           # Optional: working directory, useful for monorepos
-          # working-directory: somedir
+          working-directory: ../../backend
 
           # Optional: golangci-lint command line arguments.
           # args: --issues-exit-code=0
