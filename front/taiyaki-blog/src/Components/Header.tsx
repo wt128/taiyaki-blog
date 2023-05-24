@@ -69,7 +69,7 @@ export const Header = () => {
         <Typography
           variant="h6"
           className={classes.title}
-          onClick={() => window.history.pushState({}, '', '/')}
+          onClick={() => location.pathname = "/"}
         >
           Taiyaki
         </Typography>

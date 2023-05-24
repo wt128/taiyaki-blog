@@ -30,9 +30,17 @@ type ArticleDTO struct {
 	bun.BaseModel `bun:"table:articles,alias:ac"`
 	ID            uint   `json:"id" bun:"id,pk,autoincrement"`
 	Content       string `json:"content" bun:"content"`
+	Tag           string `json:"tag" bun:"tag"`
 	Title         string `json:"title" bun:"title"`
 	CreatedAt     string `json:"createdAt" bun:"created_at"`
 	Author        string `json:"author" bun:"author"`
+}
+
+type ArticleTag struct {
+	bun.BaseModel `bun:"alias:at"`
+	ID            uint   `json:"id" bun:"id,pk,autoincrement"`
+	Name          string `json:"name"`
+	Color         string `json:"color"`
 }
 
 func main() {
@@ -48,7 +56,9 @@ func main() {
 		var article []ArticleDTO
 		err := sqlInstance.NewSelect().
 			Model((*ArticleDTO)(nil)).
-			ColumnExpr("ac.id ,title, content, u.name as author").
+			ColumnExpr("ac.id ,title, content, u.name as author, ac.created_at, user_id, tag").
+			Join("left join article_tags as at").
+			JoinOn("ac.id = at.article_id").
 			Join("left join auth_users as u").
 			JoinOn("u.id = ac.user_id").
 			Scan(ctx, &article)
@@ -60,6 +70,7 @@ func main() {
 	})
 	r.GET("/article/:id", func(ctx *gin.Context) {
 		var article ArticleDTO
+		
 		id := ctx.Param("id")
 		err := sqlInstance.NewSelect().
 			Model((*ArticleDTO)(nil)).
@@ -68,6 +79,12 @@ func main() {
 			JoinOn("u.id = ac.user_id").
 			Where("ac.id = ?", id).
 			Scan(ctx, &article)
+		sqlInstance.NewSelect().
+			Model((*ArticleTag)(nil)).
+			Where("at.article_id = ?", id)
+			//Scan(ctx, &)
+			
+
 		if err != nil {
 			util.ErrorNotice(err)
 			ctx.Abort()

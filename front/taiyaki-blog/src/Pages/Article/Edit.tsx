@@ -12,6 +12,7 @@ import { Alert, LoadingButton } from '@mui/lab';
 import { useAuth0Token } from '../../Utils/auth';
 import rehypeHighlight from 'https://esm.sh/rehype-highlight@5';
 import remarkGfm from 'remark-gfm';
+import CodeBlock from '../../Components/CodeBlock';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -45,15 +46,15 @@ const useStyles = makeStyles(() =>
       fontSize: '24px',
     },
     md: {
-      lineHeight: '6px'
-    }
+      lineHeight: '6px',
+    },
   })
 );
 
 export const Edit: FC = () => {
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
-  
+
   const classes = useStyles();
   const token = useAuth0Token();
   const [loading, setLoading] = useState(false);
@@ -146,9 +147,15 @@ export const Edit: FC = () => {
           </div>
           <div>
             <ReactMarkdown
+              className={classes.md}
+              components={{
+                code: CodeBlock,
+              }}
               rehypePlugins={[rehypeHighlight]}
               remarkPlugins={[remarkGfm]}
-            >{content}</ReactMarkdown>
+            >
+              {content}
+            </ReactMarkdown>
           </div>
         </div>
       </div>

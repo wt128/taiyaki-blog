@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { articleService } from '../../Features/api/article';
 import { Skeleton } from '@mui/material';
-import { Box, Typography, makeStyles, createStyles } from '@material-ui/core';
+import { Box, Typography, makeStyles, createStyles, Chip } from '@material-ui/core';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import rehypeHighLight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
@@ -63,12 +63,11 @@ export const Read = () => {
           {article.title}
         </Typography>
       </Box>
-      <Box sx={{}}>
         <Author 
           author={article.author}
           createdAt={article.createdAt}
         />
-      </Box>
+        <Chip></Chip>
       <Typography align="center">
         <ReactMarkdown
           className={classes.md}
