@@ -20,7 +20,7 @@ services:
       true
     ports:
       - 8080:8080
-  react:
+  react:  
     build: ./front/taiyaki-blog
     tty: true
     #depends_on:

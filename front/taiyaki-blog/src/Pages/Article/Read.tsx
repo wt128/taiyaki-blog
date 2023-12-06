@@ -67,7 +67,7 @@ export const Read = () => {
           author={article.author}
           createdAt={article.createdAt}
         />
-        <Chip></Chip>
+        <Chip />
       <Typography align="center">
         <ReactMarkdown
           className={classes.md}

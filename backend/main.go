@@ -47,7 +47,6 @@ func main() {
 	r := gin.Default()
 	// db := infrastructure.DbConn()
 	r.Use(corsMiddleware.Config())
-
 	//r.Use(auth0Middleware.Config())
 	var db db.DB
 	sqlInstance := db.DbConn()
@@ -82,8 +81,7 @@ func main() {
 		sqlInstance.NewSelect().
 			Model((*ArticleTag)(nil)).
 			Where("at.article_id = ?", id)
-			//Scan(ctx, &)
-			
+
 
 		if err != nil {
 			util.ErrorNotice(err)

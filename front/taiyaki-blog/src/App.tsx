@@ -7,25 +7,41 @@ import { Header } from './Components/Header';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { useEffect } from 'react';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <ArticleList />,
-  },
-  {
-    path: 'article/:id',
-    element: <ArticleRead />,
-  },
-  {
-    path: 'article/new',
-    element: <ArticleEdit />,
-  },
-]);
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     element: <ArticleList />,
+//   },
+//   {
+//     path: 'article/:id',
+//     element: auth0.isAuthenticated ? <ArticleRead /> : <ArticleList />,
+//   },
+//   {
+//     path: 'article/new',
+//     element: auth0.isAuthenticated ?  <ArticleEdit /> : <ArticleList />,
+//   },
+// ]);
+
+const route = (isAuthenticated: Boolean) => {
+  return createBrowserRouter([
+    {
+      path: '/',
+      element: <ArticleList />,
+    },
+    {
+      path: 'article/:id',
+      element: isAuthenticated ? <ArticleRead /> : <ArticleList />,
+    },
+    {
+      path: 'article/new',
+      element: isAuthenticated ?  <ArticleEdit /> : <ArticleList />,
+    },
+  ])
+}
 function App() {
-  const {user} = useAuth0()
-  useEffect(() => {
-    
-  }, [])
+  const auth0 = useAuth0()
+  const isAuthenticated = auth0.isAuthenticated
+  const router = route(isAuthenticated)
   return (
     <>
       <div className="App">

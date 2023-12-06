@@ -27,7 +27,6 @@ const getDefaultAuthInfo = (): AuthInfo => {
   const defaultAuthInfo = document.cookie.match(
     new RegExp('sessionId\=([^\;]*)\;*')
   );
-  console.log(defaultAuthInfo)
   if (defaultAuthInfo) {
     return { userId: 1, sessionId: defaultAuthInfo[1] };
   } else {
