@@ -9,6 +9,7 @@ import {
 import { ArticleCard } from './Card';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useAuth0Token } from '../../Utils/auth';
 
 export interface Article {
   id: number;
@@ -36,17 +37,22 @@ const useStyles = makeStyles((theme: Theme) =>
 const useFetchArticleList = () => {
   const [data, setData] = useState<Article[]>([]);
   const [isFetching, setIsFetching] = useState(false);
+  const token = useAuth0Token();
   useEffect(() => {
     setIsFetching(true);
+    if (!token) {
+      return
+    }
     axios
-      .get<Article[]>(`${import.meta.env.VITE_BACKEND}/article`)
+      .get<Article[]>(`${import.meta.env.VITE_BACKEND}/article`, {
+        headers: { "authorization": `Bearer ${token}`}
+      })
       .then((res) => {
         setData(res.data);
-        console.log(data);
       })
       .catch(() => console.log(`error`))
       .finally(() => setIsFetching(false));
-  }, []);
+  }, [!!token]);
   return { lists: data, isFetching };
 };
 export const List = () => {

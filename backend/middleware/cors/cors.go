@@ -19,8 +19,12 @@ func Config() gin.HandlerFunc {
 			"PUT",
 		},
 		AllowHeaders: []string{
-			"authorization",
+			"Access-Control-Allow-Credentials",
+			"Access-Control-Allow-Headers",
 			"Content-Type",
+			"Content-Length",
+			"Accept-Encoding",
+			"Authorization",
 		},
 	})
 }

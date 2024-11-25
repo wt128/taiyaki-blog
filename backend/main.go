@@ -2,6 +2,8 @@ package main
 
 import (
 	_ "encoding/json"
+	"fmt"
+	"io"
 	_ "log"
 	_ "net/http"
 	"os"
@@ -12,6 +14,7 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/wt128/taiyaki-blog/infrastructure/db"
 	"github.com/wt128/taiyaki-blog/middleware/auth0"
+	auth0Middleware "github.com/wt128/taiyaki-blog/middleware/auth0"
 	corsMiddleware "github.com/wt128/taiyaki-blog/middleware/cors"
 	"github.com/wt128/taiyaki-blog/util"
 )
@@ -44,13 +47,25 @@ type ArticleTag struct {
 }
 
 func main() {
+	f, _ := os.Create("./log/gin.log")
+  gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 	r := gin.Default()
 	// db := infrastructure.DbConn()
 	r.Use(corsMiddleware.Config())
-	//r.Use(auth0Middleware.Config())
+	r.Use(auth0Middleware.AuthMiddleware())
+	
 	var db db.DB
 	sqlInstance := db.DbConn()
+	r.GET("/all", func(ctx *gin.Context) {
+		err := sqlInstance.NewSelect().
+			Join("left join food_des as a ").
+			JoinOn("on a.ndb_no = s.ndb_no").
+			
+			
+		// select * from nut_data as s left join food_des as a on a.ndb_no = s.ndb_no
+//left join weight as b on s.ndb_no = b.ndb_no limit 1;
 
+	})
 	r.GET("/article", func(ctx *gin.Context) {
 		var article []ArticleDTO
 		err := sqlInstance.NewSelect().
@@ -81,7 +96,7 @@ func main() {
 		sqlInstance.NewSelect().
 			Model((*ArticleTag)(nil)).
 			Where("at.article_id = ?", id)
-
+		
 
 		if err != nil {
 			util.ErrorNotice(err)
